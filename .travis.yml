@@ -20,6 +20,7 @@ install:
   - yarn install
   - bower install
 before_script:
+  - yarn run lint
   - yarn run lint:eslint
 script:
   - xvfb-run yarn run test:integration
