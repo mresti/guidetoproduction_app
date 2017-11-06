@@ -24,7 +24,7 @@ install:
 before_script:
   - polymer lint
 script:
-  - xvfb-run polymer test
+  - polymer test
 after_success:
   - if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then
       echo "Lighthouse CI only runs on Pull Requests.";
