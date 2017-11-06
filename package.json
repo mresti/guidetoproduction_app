@@ -10,7 +10,7 @@
     "stylelint": "^8.2.0"
   },
   "scripts": {
-    "lint": "npm run lint:javascript && polymer lint",
+    "lint": "npm run lint:eslint && polymer lint",
     "lint:eslint": "eslint . --ext js,html --ignore-path .gitignore",
     "test": "polymer test",
     "test:integration": "polymer build # test that psk builds without error with the CLI",
