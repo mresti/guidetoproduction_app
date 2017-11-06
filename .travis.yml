@@ -1,21 +1,46 @@
 language: node_js
 sudo: required
 dist: trusty
-node_js: stable
-cache: yarn
+addons:
+  firefox: "latest"
+  apt:
+    sources:
+      - google-chrome
+    packages:
+      - google-chrome-stable
+node_js:
+  - "6"
+cache:
+  yarn: true
 branches:
   except:
-  - "/^v\\d/"
+  - /^v\d/
 install:
-- npm install -g firebase-tools
-- npm install -g polymer-cli
-- yarn install
-- yarn global add bower
-- bower install
+  - yarn global add bower
+  - yarn install
+  - bower install
+before_script:
+  - yarn run lint
 script:
-- polymer build
+  - xvfb-run yarn run test:integration
 after_success:
-  - firebase deploy --token $FIREBASE_TOKEN
+  - if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then
+      echo "Lighthouse CI only runs on Pull Requests.";
+      exit;
+    fi
+  - yarn global add firebase-tools
+  - yarn add https://github.com/ebidel/lighthouse-ci
+  - yarn run build
+  - firebase deploy --token $FIREBASE_TOKEN --project guide2production-dev
+  - node node_modules/lighthouse-ci/runlighthouse.js https://guide2production-dev.firebaseapp.com
+before_deploy:
+  - if [ $TRAVIS_BRANCH = "develop" ]; then
+      yarn run build;
+      firebase deploy --token $FIREBASE_TOKEN --project guide2production-dev;
+    elif [ $TRAVIS_BRANCH = "master" ]; then
+      yarn run build;
+      firebase deploy --token $FIREBASE_TOKEN --project guidetoproductionapp;
+    fi
 
 notifications:
   email:
